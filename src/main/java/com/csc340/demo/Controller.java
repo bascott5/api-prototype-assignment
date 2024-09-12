@@ -13,6 +13,25 @@ import java.util.logging.Logger;
 @RestController
 public class Controller {
     @GetMapping("/")
+    public Object randomCardAPI() {
+        try {
+            String url = "https://api.scryfall.com/cards/random?q=set:blb";
+            RestTemplate template = new RestTemplate();
+            ObjectMapper mapper = new ObjectMapper();
+
+            String response = template.getForObject(url, String.class);
+            JsonNode root = mapper.readTree(response);
+
+            Card randomCard = new Card(root.get("name").asText(), root.get("id").asText(), root.get("image_uris").get("normal").asText());
+
+            return randomCard;
+        } catch (JsonProcessingException e) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, e);
+            return "<h1>error in /card</h1>";
+        }
+    }
+
+    @GetMapping("/html")
     public Object randomCard() {
         try {
             String url = "https://api.scryfall.com/cards/random?q=set:blb";
